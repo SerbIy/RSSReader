@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RSSReader</string>
+    <string name="add_rss">Add RSS</string>
+    <string name="delete_rss">Delete RSS</string>
+    <string name="add_url">OK</string>
+    <string name="add_cancel">Cancel</string>
+</resources>
