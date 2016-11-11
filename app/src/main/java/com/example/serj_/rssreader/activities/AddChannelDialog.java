@@ -2,19 +2,15 @@ package com.example.serj_.rssreader.activities;
 import android.content.Intent;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatDialog;
+
 import android.view.View;
 import android.widget.EditText;
 import com.example.serj_.rssreader.R;
 
-/**
- * Created by serj_ on 23.10.2016.
- */
 public class AddChannelDialog extends Activity {
 
-    static final int RESULT_NONE = 0;
-    static final int RESULT_URL = 1;
+    static final private int RESULT_NONE = 0;
+    static final private int RESULT_URL = 1;
 
     @Override
     protected void onCreate(Bundle Instance) {
@@ -27,8 +23,8 @@ public class AddChannelDialog extends Activity {
    }
     public void onClickADD(View view){
 
-        EditText urlfield = (EditText) findViewById(R.id.urlfield);
-        String output = urlfield.getText().toString();
+        EditText urlField = (EditText) findViewById(R.id.urlField);
+        String output = urlField.getText().toString();
 
         if(!output.equals("")) {
             Intent intent = new Intent();

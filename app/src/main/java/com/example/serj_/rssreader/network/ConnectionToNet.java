@@ -1,22 +1,20 @@
 package com.example.serj_.rssreader.network;
-import android.os.AsyncTask;
-import android.util.Log;
-import com.example.serj_.rssreader.process.FeedParser;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Logger;
 
-/**
- * Created by serj_ on 21.10.2016.
- */
-public final class ConnectionToNet {
-    final private int READ_TIMEOUT = 10000;
-    final private int CONNECT_TIMEOUT = 15000;
+
+public final class ConnectionToNet implements Closeable {
+
     private InputStream stream;
     private HttpURLConnection connection;
+    private static final Logger logger = Logger.getLogger("MyLogger");
     public ConnectionToNet(String urlStr) {
         try {
+            final  int READ_TIMEOUT = 10000;
+            final  int CONNECT_TIMEOUT = 15000;
             final URL url = new URL(urlStr);
             this.connection = (HttpURLConnection) url.openConnection();
             this.connection.setRequestProperty("Content-Type", " application/xml; charset=utf-8");
@@ -27,7 +25,7 @@ public final class ConnectionToNet {
             this.connection.connect();
             this.stream = this.connection.getInputStream();
         } catch (Exception E) {
-
+            logger.warning("Cannot connect to url");
         }
     }
     public InputStream getStream(){
@@ -35,7 +33,7 @@ public final class ConnectionToNet {
         return this.stream;
 
     }
-    public void closeStream()throws IOException{
+    public void close()throws IOException{
         this.stream.close();
         this.connection.disconnect();
     }

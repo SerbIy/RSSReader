@@ -1,8 +1,6 @@
 package com.example.serj_.rssreader.process;
-import android.util.Log;
 import com.example.serj_.rssreader.models.Channel;
-import com.example.serj_.rssreader.models.FeedItem;
-import com.sun.istack.internal.NotNull;
+import com.example.serj_.rssreader.models.Item;
 import lombok.Getter;
 import lombok.NonNull;
 import org.xmlpull.v1.XmlPullParser;
@@ -11,13 +9,13 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
-/**
- * Created by serj_ on 19.10.2016.
- */
+
 public final class FeedParser {
+    private static final Logger logger = Logger.getLogger( FeedParser.class.getName() );
     private final XmlPullParser parser;
-    private enum TypeOfFeed {RSS, ATOM, ELSE};
+    private enum TypeOfFeed {RSS, ATOM, ELSE}
     private final Tags tags;
     private TypeOfFeed feedType;
     private int channelID;
@@ -82,30 +80,31 @@ public final class FeedParser {
         this.tags = new Tags();
     }
 
-    void getTypeOfChannel() throws XmlPullParserException, IOException{
+    private  void getTypeOfChannel() throws XmlPullParserException, IOException{
 
         parser.next();
         final String type =  parser.getName();
         parser.next();
-       Log.i ("Tag",type);
-        if (type.equals("rss")){
-            Log.i ("Tag","Yep, that's rss");
-            this.feedType = TypeOfFeed.RSS;
-        }
-        else if(type.equals("atom"))
-        {
-            Log.i ("Tag","Looks like atom");
-            this.feedType = TypeOfFeed.ATOM;
+        logger.info(type);
 
-        }
-        else{
-            Log.i ("Tag","That's something else");
-            this.feedType = TypeOfFeed.ELSE;
+        switch (type) {
+            case "rss": {
+                logger.info("Yep, that's rss");
+                this.feedType = TypeOfFeed.RSS;
+            }
+            case "atom": {
+                logger.info("Looks like atom");
+                this.feedType = TypeOfFeed.ATOM;
+            }
+            default:{
+                logger.info("That's something else");
+                this.feedType = TypeOfFeed.ELSE;
+            }
         }
     }
 
-    public ArrayList<FeedItem> getListOfItems() throws XmlPullParserException,IOException{
-        ArrayList<FeedItem> outputList = new ArrayList<FeedItem>();
+    public ArrayList<Item> getListOfItems() throws XmlPullParserException,IOException{
+        ArrayList<Item> outputList = new ArrayList<>();
         while(!(((parser.getEventType()==XmlPullParser.END_TAG)&&(parser.getName().equals(tags.getChannel())))||(parser.getEventType()==XmlPullParser.END_DOCUMENT))){
             if((parser.getEventType()==XmlPullParser.START_TAG)&&(parser.getName().equals(tags.item))) {
                 outputList.add(getItem());
@@ -116,12 +115,10 @@ public final class FeedParser {
         }
         return(outputList);
     }
-    public FeedItem getItem()throws XmlPullParserException,IOException{
-        Log.i("TagInItem","Check");
-        FeedItem item = new FeedItem();
+    private Item getItem()throws XmlPullParserException,IOException{
+        Item item = new Item();
         String nameTag;
         String text;
-        int i = 0;
         while(!((parser.getEventType()==XmlPullParser.START_TAG)&&(parser.getName().equals(tags.item)))) {
             parser.next();
         }
@@ -134,32 +131,32 @@ public final class FeedParser {
                 if(nameTag.equals(tags.getTitle())){
                     text = parseTag(nameTag);
                     item.setTitleOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getLink())){
                     text = parseTag(nameTag);
                     item.setLinkOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getDescription())){
                     text = parseTag(nameTag);
                     item.setDescriptionOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getPubDate())){
                     text = parseTag(nameTag);
                     item.setDateOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getPubDate())){
                     text = parseTag(nameTag);
                     item.setDateOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getGuid())){
                     text = parseTag(nameTag);
-                    item.setGuidOfPost(text);
-                    Log.i("TextInItem", nameTag + ": " + text);
+                    item.setIdOfPost(text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(!nameTag.equals(tags.getChannel())){
                     parseTag(nameTag);
@@ -184,22 +181,22 @@ public final class FeedParser {
                 if(nameTag.equals(tags.getTitle())){
                     text = parseTag(nameTag);
                     chan.setChannelName(text);
-                    Log.i("TextInTag", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getLink())){
                     text = parseTag(nameTag);
                     chan.setChannelLink(text);
-                    Log.i("TextInTag", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getDescription())){
                     text = parseTag(nameTag);
                     chan.setDescription(text);
-                    Log.i("TextInTag", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
                 else if(nameTag.equals(tags.getPubDate())){
                     text = parseTag(nameTag);
                     chan.setLastUpdate(text);
-                    Log.i("TextInTag", nameTag + ": " + text);
+                    logger.info(nameTag + ": " + text);
                 }
 
                 else if(!nameTag.equals(tags.getChannel())){
@@ -218,7 +215,7 @@ public final class FeedParser {
         return ((parser.getEventType()==XmlPullParser.START_TAG)&&(parser.getName().equals(tags.item)))
                 ||((parser.getEventType()==XmlPullParser.END_TAG)&&(parser.getName().equals(tags.channel)));
     }
-    private String parseTag(@NotNull String nameTag)throws XmlPullParserException,IOException{
+    private String parseTag(String nameTag)throws XmlPullParserException,IOException{
         String textOfTag = "";
         while(!((parser.getEventType()==XmlPullParser.END_TAG)&&(parser.getName().equals(nameTag)))) {
             if(parser.getText()!=null) {

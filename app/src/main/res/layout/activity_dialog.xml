@@ -9,7 +9,7 @@
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/urlfield" android:inputType="text"
+            android:id="@+id/urlField" android:inputType="text"
             android:layout_centerVertical="true" android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
     </EditText>
@@ -18,29 +18,16 @@
             android:layout_height="wrap_content"
             android:text="@string/add_cancel"
             android:id="@+id/cancel" android:layout_gravity="right"
-            android:layout_marginLeft="52dp"
-            android:layout_below="@+id/urlfield" android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" android:layout_marginStart="52dp"
-            android:focusable="true" android:focusableInTouchMode="true" android:onClick="onClickCancel">
-        <requestFocus/>
+            android:onClick="onClickCancel"
+            android:layout_below="@+id/urlField" android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
     </Button>
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_url"
             android:id="@+id/ok"
-            android:layout_marginRight="51dp" android:layout_marginEnd="51dp"
-            android:layout_below="@+id/urlfield" android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:focusable="true" android:focusableInTouchMode="true"
-            android:onClick="onClickADD">
-        <requestFocus/>
+            android:onClick="onClickADD" android:layout_below="@+id/urlField" android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
     </Button>
-    <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText2"
-            android:layout_marginBottom="75dp"
-            android:layout_above="@+id/urlfield" android:layout_toLeftOf="@+id/ok" android:layout_toStartOf="@+id/ok"
-            android:inputType="text"/>
 </RelativeLayout>
