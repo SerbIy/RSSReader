@@ -1,25 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"  android:weightSum="1"
+                android:layout_height="match_parent"
                 android:descendantFocusability="beforeDescendants"
-                android:focusableInTouchMode="true" >>
-
+                android:focusableInTouchMode="true"
+                android:fitsSystemWindows="true">
+    <include layout="@layout/app_bar_main"/>
     <EditText
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/urlField" android:inputType="text"
-            android:layout_centerVertical="true" android:layout_alignParentLeft="true"
+            android:id="@+id/urlField"
+            android:inputType="text"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
     </EditText>
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_cancel"
-            android:id="@+id/cancel" android:layout_gravity="right"
+            android:id="@+id/cancel"
+            android:layout_gravity="right"
             android:onClick="onClickCancel"
-            android:layout_below="@+id/urlField" android:layout_alignParentLeft="true"
+            android:layout_below="@+id/urlField"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true">
     </Button>
     <Button
@@ -27,7 +33,9 @@
             android:layout_height="wrap_content"
             android:text="@string/add_url"
             android:id="@+id/ok"
-            android:onClick="onClickADD" android:layout_below="@+id/urlField" android:layout_alignParentRight="true"
+            android:onClick="onClickADD"
+            android:layout_below="@+id/urlField"
+            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true">
     </Button>
 </RelativeLayout>

@@ -1,13 +1,13 @@
 package com.example.serj_.rssreader.activities;
 import android.content.Intent;
-import android.app.Activity;
 import android.os.Bundle;
-
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.EditText;
 import com.example.serj_.rssreader.R;
 
-public class AddChannelDialog extends Activity {
+public class AddChannelDialog extends AppCompatActivity {
 
     static final private int RESULT_NONE = 0;
     static final private int RESULT_URL = 1;
@@ -16,6 +16,8 @@ public class AddChannelDialog extends Activity {
     protected void onCreate(Bundle Instance) {
         super.onCreate(Instance);
         setContentView(R.layout.activity_dialog);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
     }
    public void onClickCancel(View view){
        setResult(RESULT_NONE);
@@ -33,4 +35,6 @@ public class AddChannelDialog extends Activity {
             finish();
         }
     }
+
+
 }

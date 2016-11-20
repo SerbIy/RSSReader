@@ -4,4 +4,7 @@
     <string name="delete_rss">Delete RSS</string>
     <string name="add_url">OK</string>
     <string name="add_cancel">Cancel</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="channels_list_title">RSS channels</string>
 </resources>

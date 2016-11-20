@@ -1,0 +1,61 @@
+package com.example.serj_.rssreader.adapters;
+
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+import com.example.serj_.rssreader.R;
+import com.example.serj_.rssreader.models.Channel;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+public class ChannelListAdapter extends ArrayAdapter<Channel> implements View.OnClickListener {
+
+    private static final Logger logger = Logger.getLogger("MyLogger");
+    private LayoutInflater inflater;
+
+    private static class ViewHolder{
+        TextView channelName;
+        TextView newItems;
+        TextView lastPubDate;
+        ViewHolder(View view) {
+            channelName = (TextView) view.findViewById(R.id.channel_name);
+            newItems = (TextView) view.findViewById(R.id.items_count);
+           lastPubDate = (TextView) view.findViewById(R.id.last_update);
+        }
+    }
+
+    public ChannelListAdapter(Context context, ArrayList<Channel> channels){
+        super(context,R.layout.channel_in_list,channels);
+        inflater = LayoutInflater.from(context);
+        logger.info(context.toString());
+    }
+
+    @Override
+    public View getView(final int position, View convertView, final ViewGroup parent) {
+        Channel channel = getItem(position);
+        ViewHolder viewHolder;
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.channel_in_list, parent, false);
+            viewHolder = new ViewHolder(convertView);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+        viewHolder.channelName.setText(channel.getChannelName());
+        logger.info("Channel name "+channel.getChannelName());
+        viewHolder.newItems.setText(""+channel.getNewItems());
+        logger.info("Channel items "+channel.getNewItems());
+        return convertView;
+
+    }
+
+    @Override
+    public void onClick(final View v) {
+
+    }
+}

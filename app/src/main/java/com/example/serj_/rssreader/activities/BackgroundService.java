@@ -2,20 +2,23 @@ package com.example.serj_.rssreader.activities;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.IBinder;
 import com.example.serj_.rssreader.database.RSSDatabaseHelper;
+import com.example.serj_.rssreader.process.IntentEditor;
+import com.example.serj_.rssreader.tasks.GetAllChannelsTask;
+import com.example.serj_.rssreader.tasks.ReadFromNetTask;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 
 final public class BackgroundService extends Service {
-    final private static  String PREFERENCE_NAME = "MySharedPreference";
-    private SharedPreferences sharedPreferences;
+
+
     private ExecutorService taskpool;
-    final private int NUMBER_OF_THREADS = 1;
     private RSSDatabaseHelper rssDatabase;
+
     private static final Logger logger = Logger.getLogger("MyLogger");
 
     public BackgroundService(){
@@ -31,21 +34,29 @@ final public class BackgroundService extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
+        final int NUMBER_OF_THREADS = 2;
         rssDatabase = new RSSDatabaseHelper(getApplicationContext());
         taskpool = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-        sharedPreferences = getSharedPreferences(PREFERENCE_NAME,MODE_PRIVATE);
         logger.info("Service created");
     }
     @Override
     public int onStartCommand(final Intent intent,final int flags,final int startId){
         super.onStartCommand(intent,flags,startId);
         logger.info("Service online");
-        final int command = IntentCreator.getCommand(intent);
+        final int command = IntentEditor.getCommand(intent);
         switch (command) {
-            case IntentCreator.GET_CHANNEL_FROM_NET:{
+            case IntentEditor.GET_CHANNEL_FROM_NET:{
                 logger.info("Try to download channel");
-                String url = IntentCreator.getUrl(intent);
-                taskpool.execute(new ReadFromNetTask(url, rssDatabase));}
+                String url = IntentEditor.getUrl(intent);
+                taskpool.execute(new ReadFromNetTask(url, rssDatabase,this));
+                break;
+            }
+            case IntentEditor.ASK_FOR_CHANNELS:{
+                logger.info("Try to get channels from database");
+                taskpool.execute(new GetAllChannelsTask(rssDatabase,this));
+                break;
+            }
+
             default:{
                 logger.info("No action");
             }

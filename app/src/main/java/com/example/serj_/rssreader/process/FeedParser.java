@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 
 
 public final class FeedParser {
-    private static final Logger logger = Logger.getLogger( FeedParser.class.getName() );
     private final XmlPullParser parser;
     private enum TypeOfFeed {RSS, ATOM, ELSE}
     private final Tags tags;
     private TypeOfFeed feedType;
     private int channelID;
+    private static final Logger logger = Logger.getLogger("MyLogger");
 
     @Getter
     private final class Tags {
@@ -91,14 +91,17 @@ public final class FeedParser {
             case "rss": {
                 logger.info("Yep, that's rss");
                 this.feedType = TypeOfFeed.RSS;
+                break;
             }
             case "atom": {
                 logger.info("Looks like atom");
                 this.feedType = TypeOfFeed.ATOM;
+                break;
             }
             default:{
                 logger.info("That's something else");
                 this.feedType = TypeOfFeed.ELSE;
+                break;
             }
         }
     }
@@ -221,7 +224,7 @@ public final class FeedParser {
             if(parser.getText()!=null) {
                 textOfTag += parser.getText();
             }
-            parser.next();
+            parser.nextToken();
         }
         return textOfTag;
     }
