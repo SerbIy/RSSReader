@@ -15,7 +15,9 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import com.example.serj_.rssreader.R;
 import com.example.serj_.rssreader.adapters.ChannelListAdapter;
+import com.example.serj_.rssreader.adapters.ItemListAdapter;
 import com.example.serj_.rssreader.models.Channel;
+import com.example.serj_.rssreader.models.Item;
 import com.example.serj_.rssreader.process.IntentEditor;
 
 
@@ -42,11 +44,13 @@ public class MainActivity extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         toggle.syncState();
-        ChannelListAdapter adapter = new ChannelListAdapter(this,new ArrayList<Channel>());
+        ChannelListAdapter channelsAdapter = new ChannelListAdapter(this,new ArrayList<Channel>());
         ListView channelList = (ListView) findViewById(R.id.list_of_channels);
-        channelList.setAdapter(adapter);
+        channelList.setAdapter(channelsAdapter);
         startService(IntentEditor.askServiceForChannels(this));
-
+        ItemListAdapter itemsAdapter = new ItemListAdapter(this,new ArrayList<Item>());
+        ListView itemList = (ListView) findViewById(R.id.list_of_items);
+        itemList.setAdapter(itemsAdapter);
     }
 
     @Override
@@ -108,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
                    updateChannelList(channels);
                    break;
                }
+               case  IntentEditor.ALL_ITEMS_FROM_DATABASE:{
+                   logger.info("We receive all items from database");
+                   ArrayList<Item> items = IntentEditor.getItems(intent);
+                   updateItemlList(items);
+                   break;
+               }
                default:{
 
                }
@@ -122,5 +132,11 @@ public class MainActivity extends AppCompatActivity {
         adapt.addAll(channels);
         adapt.notifyDataSetChanged();
     }
-
+    private void updateItemlList(ArrayList<Item> items){
+        ListView listview = (ListView) findViewById(R.id.list_of_items);
+        ItemListAdapter adapt = (ItemListAdapter) listview.getAdapter();
+        adapt.clear();
+        adapt.addAll(items);
+        adapt.notifyDataSetChanged();
+    }
 }

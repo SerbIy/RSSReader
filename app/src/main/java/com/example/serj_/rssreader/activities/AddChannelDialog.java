@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import com.example.serj_.rssreader.R;
@@ -28,7 +29,7 @@ public class AddChannelDialog extends AppCompatActivity {
         EditText urlField = (EditText) findViewById(R.id.urlField);
         String output = urlField.getText().toString();
 
-        if(!output.equals("")) {
+        if(Patterns.WEB_URL.matcher(output).matches()) {
             Intent intent = new Intent();
             intent.putExtra("URL",output);
             setResult(RESULT_URL,intent);

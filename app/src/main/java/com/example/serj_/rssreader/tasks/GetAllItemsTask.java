@@ -6,27 +6,28 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.example.serj_.rssreader.database.RSSDatabaseHelper;
 import com.example.serj_.rssreader.models.Channel;
+import com.example.serj_.rssreader.models.Item;
 import com.example.serj_.rssreader.process.IntentEditor;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class GetAllChannelsTask implements Runnable{
+public class GetAllItemsTask implements Runnable{
     final private RSSDatabaseHelper rssDatabase;
     private final Context context;
     private static final Logger logger = Logger.getLogger("MyLogger");
-    public GetAllChannelsTask(RSSDatabaseHelper rssDatabaseHelper, Context context){
+    public GetAllItemsTask(RSSDatabaseHelper rssDatabaseHelper, Context context){
         this.rssDatabase=rssDatabaseHelper;
         this.context = context;
     }
     @Override
     public void run() {
         try {
-            final ArrayList<Channel> channels = rssDatabase.getAllChannels();
-            final Intent intent = IntentEditor.sendChannels(channels);
+            final ArrayList<Item> items = rssDatabase.getAllItems();
+            final Intent intent = IntentEditor.sendItems(items);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
         } catch (Throwable exception){
-            logger.warning("Cannot get channels from database");
+            logger.warning("Cannot get items from database");
         }
     }
 }

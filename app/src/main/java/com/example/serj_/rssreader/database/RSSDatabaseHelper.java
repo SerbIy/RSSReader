@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.example.serj_.rssreader.models.Channel;
 import com.example.serj_.rssreader.models.Item;
-import com.sun.istack.internal.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +76,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public boolean addChannel(@NotNull final Channel chan){
+    public boolean addChannel(final Channel chan){
 
         SQLiteDatabase database = this.getWritableDatabase();
         boolean channelAdded = false;
@@ -89,7 +88,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         return channelAdded;
     }
 
-    public int addItems(@NotNull final ArrayList<Item> items){
+    public int addItems(final ArrayList<Item> items){
         SQLiteDatabase database = this.getWritableDatabase();
         int counter = 0;
         for (Item item:items){
@@ -123,7 +122,6 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         logger.info("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_LAST_UPDATE + " = " + channel.getLastUpdate() + " WHERE " + CHANNEL_ID + " =" +channel.getChannelID());
         database.execSQL("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_LAST_UPDATE + " = " + channel.getLastUpdate() + " WHERE " + CHANNEL_ID + " =" +channel.getChannelID());
         database.close();
-
     }
     public ArrayList<Channel> getAllChannels(){
         SQLiteDatabase database = this.getWritableDatabase();
@@ -145,6 +143,29 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         return channels;
+    }
+    public ArrayList<Item> getAllItems(){
+            SQLiteDatabase database = this.getWritableDatabase();
+            final String Query = "SELECT  * FROM " + TABLE_ITEMS;
+            final Cursor cursor = database.rawQuery(Query, null);
+            ArrayList<Item> items = new ArrayList<>();
+            if (cursor.moveToFirst()) {
+                do {
+                    Item item = new Item();
+                    item.setChannelID(cursor.getInt(cursor.getColumnIndex(CHANNEL_ID)));
+                    item.setDescriptionOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DESCRIPTION)));
+                    item.setLinkOfPost(cursor.getString(cursor.getColumnIndex(ITEM_LINK)));
+                    item.setIdOfPost(cursor.getString(cursor.getColumnIndex(ITEM_ID)));
+                    item.setTitleOfPost(cursor.getString(cursor.getColumnIndex(ITEM_TITLE)));
+                    item.setDateOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DATE)));
+                    item.setFresh(cursor.getInt(cursor.getColumnIndex(IS_ITEM_FRESH)) == 1);
+                    items.add(item);
+                }
+                while (cursor.moveToNext());
+            }
+            cursor.close();
+
+        return items;
     }
     public ArrayList<Item> getItems(List<Integer> channelsID){
         SQLiteDatabase database = this.getWritableDatabase();
@@ -240,11 +261,5 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         value.put(IS_ITEM_FRESH,(item.isFresh()?1:0));
         return value;
     }
-    public void deleteDB(){
-        SQLiteDatabase database = getWritableDatabase();
-        database.execSQL("DROP TABLE IF EXISTS "+ TABLE_ITEMS);
-        database.execSQL("DROP TABLE IF EXISTS "+TABLE_CHANNELS);
-        database.close();
-    };
 
 }

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import com.example.serj_.rssreader.activities.BackgroundService;
 import com.example.serj_.rssreader.models.Channel;
+import com.example.serj_.rssreader.models.Item;
 
-import java.io.File;
 import java.util.ArrayList;
 
 
@@ -14,16 +14,21 @@ public final  class IntentEditor {
     static final private String URL_TAG = "url";
     static final private String CHANNEL_TAG = "channel";
     static final private String CHANNELS_TAG = "channels";
-    static final private String ITEM_TAG = "item";
+    static final private String ITEMS_TAG = "items";
 
-    static final public int NOTHING_TO_ADD = 0;
+
     static final public int GET_CHANNEL_FROM_NET = 1;
+    static final public int ASK_FOR_CHANNELS = 5;
+    static final public int ASK_FOR_ALL_ITEMS = 7;
+
     static final public int NEW_CHANNEL_ADDED = 2;
     static final public int OLD_CHANNEL_TO_ADD = 3;
-    static final public int ASK_FOR_CHANNELS = 5;
+    static final public int NOTHING_TO_ADD = 0;
     static final public int ALL_CHANNELS_FROM_DATABASE = 6;
+    static final public  int ALL_ITEMS_FROM_DATABASE = 8;
 
     public static final String FILTER = "CallbackToUi";
+
 
     public static Intent sendURLToService(final Context context,final String url){
         Intent intent = new Intent(context,BackgroundService.class);
@@ -34,6 +39,11 @@ public final  class IntentEditor {
     public static Intent askServiceForChannels(Context context){
         Intent intent = new Intent(context,BackgroundService.class);
         intent = addCommand(intent,ASK_FOR_CHANNELS);
+        return intent;
+    }
+    public static Intent askServiceForItems(Context context){
+        Intent intent = new Intent(context,BackgroundService.class);
+        intent = addCommand(intent,ASK_FOR_ALL_ITEMS);
         return intent;
     }
     public static Intent informAboutNewChannel(){
@@ -63,11 +73,25 @@ public final  class IntentEditor {
         }
         return intent;
     }
+    public static Intent sendItems(ArrayList<Item> items){
+        Intent intent = new Intent(FILTER);
+        if(items.size()>0) {
+            intent = addCommand(intent, ALL_ITEMS_FROM_DATABASE);
+            intent.putParcelableArrayListExtra(ITEMS_TAG, items);
+        }
+        else{
+            intent = addCommand(intent,NOTHING_TO_ADD);
+        }
+        return intent;
+    }
     public static ArrayList<Channel> getChannels(final Intent intent){
 
         return(intent.getParcelableArrayListExtra(CHANNELS_TAG));
     }
+    public static ArrayList<Item> getItems(final Intent intent){
 
+        return(intent.getParcelableArrayListExtra(ITEMS_TAG));
+    }
 
 
     private static  Intent addCommand(final Intent intent, final int command){

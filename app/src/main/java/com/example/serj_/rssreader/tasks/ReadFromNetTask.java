@@ -11,14 +11,13 @@ import com.example.serj_.rssreader.database.RSSDatabaseHelper;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.example.serj_.rssreader.process.IntentEditor;
-import com.sun.istack.internal.NotNull;
 
 public final class ReadFromNetTask implements Runnable {
     final private String url;
     final private RSSDatabaseHelper rssDatabase;
     private final Context context;
     private static final Logger logger = Logger.getLogger("MyLogger");
-    public ReadFromNetTask(@NotNull String url, @NotNull RSSDatabaseHelper rssDatabaseHelper, @NotNull Context context){
+    public ReadFromNetTask(String url, RSSDatabaseHelper rssDatabaseHelper, Context context){
         this.url = url;
         this.rssDatabase = rssDatabaseHelper;
         this.context = context;

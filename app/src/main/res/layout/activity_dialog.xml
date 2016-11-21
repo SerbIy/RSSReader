@@ -7,9 +7,9 @@
                 android:descendantFocusability="beforeDescendants"
                 android:focusableInTouchMode="true"
                 android:fitsSystemWindows="true">
-    <include layout="@layout/app_bar_main"/>
+    <include layout ="@layout/app_bar_main"/>
     <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/urlField"
             android:inputType="text"

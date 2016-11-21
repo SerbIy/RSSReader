@@ -9,11 +9,9 @@
         tools:openDrawer="start"
         android:fitsSystemWindows="true" tools:showIn="@layout/content_main">
 
-<LinearLayout android:layout_height="match_parent"
-android:layout_width="match_parent">
-    <include layout="@layout/app_bar_main"/>
+
     <include layout="@layout/content_main"/>
-</LinearLayout>
+
     <include layout="@layout/channel_list"
              android:layout_height="match_parent"
              android:layout_width="match_parent"
