@@ -24,9 +24,11 @@ class GetAllChannelsTask implements Runnable{
     @Override
     public void run() {
         try {
+            logger.info("Task <Get channels> started");
             final ArrayList<Channel> channels = rssDatabase.getAllChannels();
             final Intent intent = IntentEditor.sendChannels(channels);
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            logger.info("Task <Get channels> finished");
         } catch (final Throwable exception){
             logger.warning("Cannot get channels from database");
         }

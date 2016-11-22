@@ -27,53 +27,55 @@ import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int  ADD_CHANNEL_DIALOG = 1351;
-    private static final int RESULT_URL = 2331;
+    private static final int  ADD_CHANNEL_DIALOG = 111;
+    private static final int RESULT_URL = 122;
 
 
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
-
+private final Logger logger = Logger.getLogger(this.getClass().getName());
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout);
-        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         toggle.syncState();
 
-        final ChannelListAdapter channelsAdapter = new ChannelListAdapter(this,new ArrayList<Channel>());
-        final ListView channelList = (ListView) findViewById(R.id.list_of_channels);
+        ChannelListAdapter channelsAdapter = new ChannelListAdapter(this,new ArrayList<Channel>());
+        ListView channelList = (ListView) findViewById(R.id.list_of_channels);
         channelList.setAdapter(channelsAdapter);
 
 
-        final ItemListAdapter itemsAdapter = new ItemListAdapter(this,new ArrayList<Item>());
-        final ListView itemList = (ListView) findViewById(R.id.list_of_items);
+        ItemListAdapter itemsAdapter = new ItemListAdapter(this,new ArrayList<Item>());
+        ListView itemList = (ListView) findViewById(R.id.list_of_items);
         itemList.setAdapter(itemsAdapter);
 
         startService(IntentEditor.askServiceForChannels(this, BackgroundService.class));
+        logger.info("We in onCreate");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         LocalBroadcastManager.getInstance(this).registerReceiver(MessageReceiver, new IntentFilter(IntentEditor.FILTER));
+        logger.info("We in onStart");
     }
 
     @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        logger.info("Menu created");
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) {
 
         final int id = item.getItemId();
 
@@ -81,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.add_new_rrs) {
             startActivityForResult(new Intent(this, AddChannelDialog.class),ADD_CHANNEL_DIALOG);
         }
-
+        logger.info("Selected");
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    protected void onActivityResult (@NonNull final int requestCode,@NonNull final int resultCode,@NonNull final Intent data){
+    protected void onActivityResult (int requestCode,int resultCode,Intent data){
 
         if(resultCode==RESULT_URL) {
             final String url = data.getExtras().getString("URL");
@@ -134,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
            }
         }
     };
-    private void updateChannelList(ArrayList<Channel> channels){
+    private void updateChannelList(@NonNull final ArrayList<Channel> channels){
         ListView listview = (ListView) findViewById(R.id.list_of_channels);
         ChannelListAdapter adapt = (ChannelListAdapter) listview.getAdapter();
         adapt.clear();
@@ -142,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         adapt.addAll(channels);
         adapt.notifyDataSetChanged();
     }
-    private void updateItemList(ArrayList<Item> items){
+    private void updateItemList(@NonNull final ArrayList<Item> items){
         ListView listview = (ListView) findViewById(R.id.list_of_items);
         ItemListAdapter adapt = (ItemListAdapter) listview.getAdapter();
         adapt.clear();
@@ -152,7 +154,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(MessageReceiver);
+        logger.info("We in onPause");
         super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(MessageReceiver);
+
     }
 }

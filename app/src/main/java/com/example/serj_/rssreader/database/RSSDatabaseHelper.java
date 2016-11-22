@@ -90,8 +90,9 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     public boolean addChannel(@NonNull final Channel chan){
 
         boolean channelAdded = false;
+        SQLiteDatabase database = null;
         try {
-            final SQLiteDatabase database  = this.getWritableDatabase();
+            database  = this.getWritableDatabase();
             if (!isThereChannel(chan, database)) {
                 channelAdded = true;
                 database.insert(TABLE_CHANNELS, null, getChannelValue(chan));
@@ -101,14 +102,20 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         catch (final SQLException exception){
             logger.warning("Can't add channel "+chan.getChannelName());
         }
+        finally {
+            if(database!=null) {
+                database.close();
+            }
+        }
         return channelAdded;
     }
 
     public int addItems(@NonNull final ArrayList<Item> items){
 
         int counter = 0;
+        SQLiteDatabase database = null;
         try {
-            final SQLiteDatabase database = this.getWritableDatabase();
+            database = this.getWritableDatabase();
             for (Item item : items) {
                 if (isThereItem(item, database)) {
                     break;
@@ -118,11 +125,16 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 }
                 logger.info("That's what we put in:" + item.toString());
             }
-            database.close();
+
             logger.info("That's new: " + counter);
         }
         catch (final SQLException exception){
             logger.warning("Can't add items");
+        }
+        finally {
+            if(database!=null) {
+                database.close();
+            }
         }
 
         return counter;
@@ -154,9 +166,10 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     }
     public ArrayList<Channel> getAllChannels(){
         ArrayList<Channel> channels = new ArrayList<>();
+        Cursor cursor = null;
         try {
             final SQLiteDatabase database = this.getWritableDatabase();
-            final Cursor cursor = database.query(TABLE_CHANNELS,null,null,null,null,null,null);
+            cursor = database.query(TABLE_CHANNELS,null,null,null,null,null,null);
             channels = new ArrayList<>();
             if (cursor.moveToFirst()) {
                 do {
@@ -171,18 +184,24 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 }
                 while (cursor.moveToNext());
             }
-            cursor.close();
+
         }
         catch (final SQLException exception){
             logger.warning("Can't get channels");
         }
+        finally{
+            if(cursor!=null) {
+                cursor.close();
+            }
+        }
         return channels;
     }
     public ArrayList<Item> getAllItems(){
-            ArrayList<Item> items = new ArrayList<>();
+        ArrayList<Item> items = new ArrayList<>();
+        Cursor cursor = null;
         try {
             final SQLiteDatabase database = this.getWritableDatabase();
-            final Cursor cursor = database.query(TABLE_ITEMS,null,null,null,null,null,null);
+            cursor = database.query(TABLE_ITEMS,null,null,null,null,null,null);
 
             if (cursor.moveToFirst()) {
                 do {
@@ -198,10 +217,15 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 }
                 while (cursor.moveToNext());
             }
-            cursor.close();
+
         }
         catch (final SQLException exception){
             logger.warning("Can't get all items");
+        }
+        finally {
+            if (cursor!=null) {
+                cursor.close();
+            }
         }
         return items;
     }
@@ -240,12 +264,10 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
             logger.warning("Can't get items");
         }
         finally{
-            try {
-                cursor.close();
-            }
-            catch (final NullPointerException exception){
-                logger.warning("Can't close cursor");
-            }
+
+                if(cursor!=null) {
+                    cursor.close();
+                }
         }
         return items;
     }
@@ -270,12 +292,9 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
             logger.warning("Can't connect to database");
         }
         finally {
-            try {
-                cursor.close();
-            }
-            catch (final NullPointerException exception){
-                logger.warning("Can't close cursor");
-            }
+                if(cursor!=null) {
+                    cursor.close();
+                }
         }
         return  result;
     }
@@ -302,12 +321,9 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
             logger.warning("Can't connect to database or something wrong with item");
         }
         finally {
-            try {
-                cursor.close();
-            }
-            catch (final NullPointerException exception){
-                logger.warning("Can't close cursor");
-            }
+                if(cursor!=null) {
+                    cursor.close();
+                }
         }
         return  result;
     }
