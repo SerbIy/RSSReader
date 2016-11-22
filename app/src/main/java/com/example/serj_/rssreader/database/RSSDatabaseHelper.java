@@ -3,10 +3,12 @@ package com.example.serj_.rssreader.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.example.serj_.rssreader.models.Channel;
 import com.example.serj_.rssreader.models.Item;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.logging.Logger;
 public class RSSDatabaseHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
+    
     private static final String DATABASE_NAME = "RSSDatabase";
     private static final String TABLE_CHANNELS = "channels";
     private static final String TABLE_ITEMS = "items";
@@ -25,9 +28,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     private static final String CHANNEL_NAME = "name";
     private static final String CHANNEL_DESCRIPTION = "description";
     private static final String CHANNEL_NEW_ITEMS = "new_items";
-
     private static final String CHANNEL_ID = "channel_id";
-
     private static final String ITEM_ID = "item_id";
     private static final String ITEM_GUID = "guid";
     private static final String ITEM_LINK = "link_to_post";
@@ -36,14 +37,15 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     private static final String ITEM_DESCRIPTION = "description_of_post";
     private static final String IS_ITEM_FRESH = "is_fresh";
 
-    private static final Logger logger = Logger.getLogger("MyLogger");
-    public RSSDatabaseHelper(Context context){
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    public RSSDatabaseHelper(@NonNull final Context context){
 
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
-    public void onCreate(final SQLiteDatabase db) {
+    public void onCreate(@NonNull final SQLiteDatabase db) {
         logger.info("We create new table");
         final String CREATE_CHANNEL_TABLE = "CREATE TABLE "+
                 TABLE_CHANNELS+"("+
@@ -64,91 +66,124 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 ITEM_TITLE+" TEXT,"+
                 ITEM_DESCRIPTION+" TEXT,"+
                 IS_ITEM_FRESH+" INTEGER"+")";
-
-        db.execSQL(CREATE_CHANNEL_TABLE);
-        db.execSQL(CREATE_ITEM_TABLE);
+        try {
+            db.execSQL(CREATE_CHANNEL_TABLE);
+            db.execSQL(CREATE_ITEM_TABLE);
+        }
+        catch (final SQLException exception){
+            logger.warning("Can't create tables");
+        }
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANNELS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
-        onCreate(db);
+    public void onUpgrade(@NonNull final SQLiteDatabase db,@NonNull final  int oldVersion,@NonNull final  int newVersion) {
+        try {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANNELS);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
+            onCreate(db);
+        }
+        catch (final SQLException exception){
+            logger.warning("Can't upgrade tables");
+        }
     }
 
-    public boolean addChannel(final Channel chan){
+    public boolean addChannel(@NonNull final Channel chan){
 
-        SQLiteDatabase database = this.getWritableDatabase();
         boolean channelAdded = false;
-        if(!isThereChannel(chan,database)){
-            channelAdded = true;
-            database.insert(TABLE_CHANNELS,null,getChannelValue(chan));
+        try {
+            final SQLiteDatabase database  = this.getWritableDatabase();
+            if (!isThereChannel(chan, database)) {
+                channelAdded = true;
+                database.insert(TABLE_CHANNELS, null, getChannelValue(chan));
+            }
+            database.close();
         }
-        database.close();
+        catch (final SQLException exception){
+            logger.warning("Can't add channel "+chan.getChannelName());
+        }
         return channelAdded;
     }
 
-    public int addItems(final ArrayList<Item> items){
-        SQLiteDatabase database = this.getWritableDatabase();
+    public int addItems(@NonNull final ArrayList<Item> items){
+
         int counter = 0;
-        for (Item item:items){
-            if(isThereItem(item,database)){
-                break;
+        try {
+            final SQLiteDatabase database = this.getWritableDatabase();
+            for (Item item : items) {
+                if (isThereItem(item, database)) {
+                    break;
+                } else {
+                    counter++;
+                    database.insert(TABLE_ITEMS, null, getItemValue(item));
+                }
+                logger.info("That's what we put in:" + item.toString());
             }
-            else{
-                counter++;
-                database.insert(TABLE_ITEMS,null,getItemValue(item));
-            }
-            logger.info("That's what we put in:" + item.toString());
-
-
+            database.close();
+            logger.info("That's new: " + counter);
         }
-        database.close();
-        logger.info("That's new: "+counter);
+        catch (final SQLException exception){
+            logger.warning("Can't add items");
+        }
+
         return counter;
     }
 
-    public void updateNewItemsOfChannel(final int idOfChannel,final int counter){
-        SQLiteDatabase database = this.getWritableDatabase();
-        logger.info("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_NEW_ITEMS + " = " + CHANNEL_NEW_ITEMS + " + " +counter+" WHERE " + CHANNEL_ID + " =" +idOfChannel);
-        database.execSQL("UPDATE " + TABLE_CHANNELS + " SET "
-                + CHANNEL_NEW_ITEMS + " = " + CHANNEL_NEW_ITEMS + " + " +counter+" WHERE "
-                + CHANNEL_ID + " =" +idOfChannel);
-        database.close();
-
+    public void updateNewItemsOfChannel(@NonNull final int idOfChannel,@NonNull final int counter){
+        try {
+            final SQLiteDatabase database = this.getWritableDatabase();
+            logger.info("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_NEW_ITEMS + " = " + CHANNEL_NEW_ITEMS + " + " + counter + " WHERE " + CHANNEL_ID + " =" + idOfChannel);
+            database.execSQL("UPDATE " + TABLE_CHANNELS + " SET "
+                    + CHANNEL_NEW_ITEMS + " = " + CHANNEL_NEW_ITEMS + " + " + counter + " WHERE "
+                    + CHANNEL_ID + " =" + idOfChannel);
+            database.close();
+        }
+        catch (final SQLException exception){
+            logger.warning("Can't update new_items field");
+        }
     }
-    public void updatePubDateOfChannel(final Channel channel){
-        SQLiteDatabase database = this.getWritableDatabase();
-        logger.info("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_LAST_UPDATE + " = " + channel.getLastUpdate() + " WHERE " + CHANNEL_ID + " =" +channel.getChannelID());
-        database.execSQL("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_LAST_UPDATE + " = " + channel.getLastUpdate() + " WHERE " + CHANNEL_ID + " =" +channel.getChannelID());
-        database.close();
+    public void updatePubDateOfChannel(@NonNull final Channel channel){
+        try {
+        final SQLiteDatabase database = this.getWritableDatabase();
+        database.execSQL("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_LAST_UPDATE + " = " + channel.getLastUpdate()
+                + " WHERE " + CHANNEL_ID + " =" +channel.getChannelID());
+            database.close();
+        }
+        catch (final SQLException exception){
+            logger.warning("Can't update pubDate field of channel");
+        }
     }
     public ArrayList<Channel> getAllChannels(){
-        SQLiteDatabase database = this.getWritableDatabase();
-        final String Query = "SELECT  * FROM " + TABLE_CHANNELS;
-        final Cursor cursor = database.rawQuery(Query, null);
         ArrayList<Channel> channels = new ArrayList<>();
-        if(cursor.moveToFirst()) {
-            do {
-                Channel channel = new Channel();
-                channel.setChannelID(cursor.getInt(cursor.getColumnIndex(CHANNEL_ID)));
-                channel.setDescription(cursor.getString(cursor.getColumnIndex(CHANNEL_DESCRIPTION)));
-                channel.setChannelLink(cursor.getString(cursor.getColumnIndex(CHANNEL_LINK)));
-                channel.setChannelName(cursor.getString(cursor.getColumnIndex(CHANNEL_NAME)));
-                channel.setLastUpdate(cursor.getString(cursor.getColumnIndex(CHANNEL_LAST_UPDATE)));
-                channel.setNewItems(cursor.getInt(cursor.getColumnIndex(CHANNEL_NEW_ITEMS)));
-                channels.add(channel);
+        try {
+            final SQLiteDatabase database = this.getWritableDatabase();
+            final Cursor cursor = database.query(TABLE_CHANNELS,null,null,null,null,null,null);
+            channels = new ArrayList<>();
+            if (cursor.moveToFirst()) {
+                do {
+                    Channel channel = new Channel();
+                    channel.setChannelID(cursor.getInt(cursor.getColumnIndex(CHANNEL_ID)));
+                    channel.setDescription(cursor.getString(cursor.getColumnIndex(CHANNEL_DESCRIPTION)));
+                    channel.setChannelLink(cursor.getString(cursor.getColumnIndex(CHANNEL_LINK)));
+                    channel.setChannelName(cursor.getString(cursor.getColumnIndex(CHANNEL_NAME)));
+                    channel.setLastUpdate(cursor.getString(cursor.getColumnIndex(CHANNEL_LAST_UPDATE)));
+                    channel.setNewItems(cursor.getInt(cursor.getColumnIndex(CHANNEL_NEW_ITEMS)));
+                    channels.add(channel);
+                }
+                while (cursor.moveToNext());
             }
-            while (cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
+        catch (final SQLException exception){
+            logger.warning("Can't get channels");
+        }
         return channels;
     }
     public ArrayList<Item> getAllItems(){
-            SQLiteDatabase database = this.getWritableDatabase();
-            final String Query = "SELECT  * FROM " + TABLE_ITEMS;
-            final Cursor cursor = database.rawQuery(Query, null);
             ArrayList<Item> items = new ArrayList<>();
+        try {
+            final SQLiteDatabase database = this.getWritableDatabase();
+            final Cursor cursor = database.query(TABLE_ITEMS,null,null,null,null,null,null);
+
             if (cursor.moveToFirst()) {
                 do {
                     Item item = new Item();
@@ -164,82 +199,119 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 while (cursor.moveToNext());
             }
             cursor.close();
+        }
+        catch (final SQLException exception){
+            logger.warning("Can't get all items");
+        }
+        return items;
+    }
 
-        return items;
-    }
-    public ArrayList<Item> getItems(List<Integer> channelsID){
-        SQLiteDatabase database = this.getWritableDatabase();
-        String ids = "(";
-        for (Integer id:channelsID){
-            ids +=id.toString()+", ";
-        }
-        ids = ids.substring(0,ids.length()-2);
-        ids += ")";
-        final String Query = "SELECT  * FROM " + TABLE_ITEMS +"WHERE" + CHANNEL_ID + " IN " + ids;
-        final Cursor cursor = database.rawQuery(Query, null);
+    public ArrayList<Item> getItems(@NonNull final List<Integer> channelsID){
         ArrayList<Item> items = new ArrayList<>();
-        if(cursor.moveToFirst()) {
-            do {
-                Item item = new Item();
-                item.setChannelID(cursor.getInt(cursor.getColumnIndex(CHANNEL_ID)));
-                item.setDescriptionOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DESCRIPTION)));
-                item.setLinkOfPost(cursor.getString(cursor.getColumnIndex(ITEM_LINK)));
-                item.setIdOfPost(cursor.getString(cursor.getColumnIndex(ITEM_ID)));
-                item.setTitleOfPost(cursor.getString(cursor.getColumnIndex(ITEM_TITLE)));
-                item.setDateOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DATE)));
-                item.setFresh(cursor.getInt(cursor.getColumnIndex(IS_ITEM_FRESH))==1);
-                items.add(item);
+        Cursor cursor = null;
+        try {
+            final SQLiteDatabase database = this.getWritableDatabase();
+            String ids = "(";
+            for (Integer id : channelsID) {
+                ids += id.toString() + ", ";
             }
-            while (cursor.moveToNext());
+            ids = ids.substring(0, ids.length() - 2);
+            ids += ")";
+
+           cursor = database.query(TABLE_ITEMS,null,CHANNEL_ID + " IN " + ids,null,null,null,null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    Item item = new Item();
+                    item.setChannelID(cursor.getInt(cursor.getColumnIndex(CHANNEL_ID)));
+                    item.setDescriptionOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DESCRIPTION)));
+                    item.setLinkOfPost(cursor.getString(cursor.getColumnIndex(ITEM_LINK)));
+                    item.setIdOfPost(cursor.getString(cursor.getColumnIndex(ITEM_ID)));
+                    item.setTitleOfPost(cursor.getString(cursor.getColumnIndex(ITEM_TITLE)));
+                    item.setDateOfPost(cursor.getString(cursor.getColumnIndex(ITEM_DATE)));
+                    item.setFresh(cursor.getInt(cursor.getColumnIndex(IS_ITEM_FRESH)) == 1);
+                    items.add(item);
+                }
+                while (cursor.moveToNext());
+            }
+
         }
-        cursor.close();
+        catch (final SQLException exception){
+            logger.warning("Can't get items");
+        }
+        finally{
+            try {
+                cursor.close();
+            }
+            catch (final NullPointerException exception){
+                logger.warning("Can't close cursor");
+            }
+        }
         return items;
     }
-    private boolean isThereChannel(Channel chan, SQLiteDatabase database){
+
+    private boolean isThereChannel(@NonNull final Channel chan,@NonNull final SQLiteDatabase database){
         boolean result = false;
+        Cursor cursor = null;
         try {
             final String Query = "Select * from " + TABLE_CHANNELS + " where " + CHANNEL_LINK + "='" + chan.getChannelLink()+"'";
-            final Cursor cursor = database.rawQuery(Query, null);
+            cursor = database.rawQuery(Query, null);
             if (cursor.getCount()==0) {
                 logger.info("There is no channel like that");
-                cursor.close();
                 result = false;
             } else {
                 logger.info("There is already channel like that");
-                cursor.close();
                 result = true;
 
             }
 
         }
-        catch(Throwable e){
-            logger.warning("Cannot connect to database");
+        catch(final SQLException exception){
+            logger.warning("Can't connect to database");
+        }
+        finally {
+            try {
+                cursor.close();
+            }
+            catch (final NullPointerException exception){
+                logger.warning("Can't close cursor");
+            }
         }
         return  result;
     }
-    private boolean isThereItem (Item item, SQLiteDatabase database){
-        boolean result=false;
+
+    private boolean isThereItem (@NonNull final  Item item,@NonNull final  SQLiteDatabase database){
+        boolean result = false;
+        Cursor cursor = null;
         try {
             final String Query = "Select * from " + TABLE_ITEMS + " where " + ITEM_GUID + "='" +item.getIdOfPost()+"'";
             logger.info("Try to :"+Query);
-            final Cursor cursor = database.rawQuery(Query, null);
+            cursor = database.rawQuery(Query, null);
             if (cursor.getCount()==0) {
                 cursor.close();
                 logger.info("There is no item in database like that");
                 result = false;
             } else {
-                cursor.close();
+
                 logger.info("That item is already in database");
                 result = true;
             }
 
         }
-        catch (Throwable e){
-            logger.warning("Cannot connect to database or something wrong with item");
+        catch (final SQLException exception){
+            logger.warning("Can't connect to database or something wrong with item");
+        }
+        finally {
+            try {
+                cursor.close();
+            }
+            catch (final NullPointerException exception){
+                logger.warning("Can't close cursor");
+            }
         }
         return  result;
     }
-    private ContentValues getChannelValue(Channel chan){
+    private ContentValues getChannelValue(@NonNull final Channel chan){
         final ContentValues value = new ContentValues();
         value.put(CHANNEL_ID,chan.getChannelID());
         value.put(CHANNEL_LAST_UPDATE,chan.getLastUpdate());
@@ -250,7 +322,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         logger.info(" Items in Value"+chan.getNewItems());
         return value;
     }
-    private ContentValues getItemValue(Item item){
+    private ContentValues getItemValue(@NonNull final Item item){
         final ContentValues value = new ContentValues();
         value.put(ITEM_GUID,item.getIdOfPost());
         value.put(CHANNEL_ID,item.getChannelID());

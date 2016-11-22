@@ -1,4 +1,4 @@
-package com.example.serj_.rssreader.activities;
+package com.example.serj_.rssreader.mainscreen;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,11 +14,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import com.example.serj_.rssreader.R;
-import com.example.serj_.rssreader.adapters.ChannelListAdapter;
-import com.example.serj_.rssreader.adapters.ItemListAdapter;
+import com.example.serj_.rssreader.backgroundwork.BackgroundService;
+import com.example.serj_.rssreader.dialogscreen.AddChannelDialog;
 import com.example.serj_.rssreader.models.Channel;
 import com.example.serj_.rssreader.models.Item;
 import com.example.serj_.rssreader.process.IntentEditor;
+import lombok.NonNull;
 
 
 import java.util.ArrayList;
@@ -26,44 +27,55 @@ import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final private int  ADD_CHANNEL_DIALOG = 0;
-    static final private int RESULT_URL = 1;
+    private static final int  ADD_CHANNEL_DIALOG = 1351;
+    private static final int RESULT_URL = 2331;
 
 
-
-    private static final Logger logger = Logger.getLogger("MyLogger");
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver, new IntentFilter(IntentEditor.FILTER));
+
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.main_layout);
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close);
         toggle.syncState();
-        ChannelListAdapter channelsAdapter = new ChannelListAdapter(this,new ArrayList<Channel>());
-        ListView channelList = (ListView) findViewById(R.id.list_of_channels);
+
+        final ChannelListAdapter channelsAdapter = new ChannelListAdapter(this,new ArrayList<Channel>());
+        final ListView channelList = (ListView) findViewById(R.id.list_of_channels);
         channelList.setAdapter(channelsAdapter);
-        startService(IntentEditor.askServiceForChannels(this));
-        ItemListAdapter itemsAdapter = new ItemListAdapter(this,new ArrayList<Item>());
-        ListView itemList = (ListView) findViewById(R.id.list_of_items);
+
+
+        final ItemListAdapter itemsAdapter = new ItemListAdapter(this,new ArrayList<Item>());
+        final ListView itemList = (ListView) findViewById(R.id.list_of_items);
         itemList.setAdapter(itemsAdapter);
+
+        startService(IntentEditor.askServiceForChannels(this, BackgroundService.class));
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver(MessageReceiver, new IntentFilter(IntentEditor.FILTER));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        int id = item.getItemId();
+        final int id = item.getItemId();
 
 
         if (id == R.id.add_new_rrs) {
@@ -74,28 +86,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult (int requestCode, int resultCode, Intent data){
+    protected void onActivityResult (@NonNull final int requestCode,@NonNull final int resultCode,@NonNull final Intent data){
 
         if(resultCode==RESULT_URL) {
-            String url = data.getExtras().getString("URL");
+            final String url = data.getExtras().getString("URL");
 
             logger.info("Command to read from net");
-            startService(IntentEditor.sendURLToService(this,url));
-
-
+            startService(IntentEditor.sendURLToService(this,url,BackgroundService.class));
         }
         else{
             logger.info("We have no url");
         }
     }
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver MessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             logger.info("We receive something!");
            switch (IntentEditor.getCommand(intent)){
                case IntentEditor.NEW_CHANNEL_ADDED:{
                    logger.info("New channel added");
-                   startService(IntentEditor.askServiceForChannels(context));
+                   startService(IntentEditor.askServiceForChannels(context,BackgroundService.class));
                    break;
                }
                case IntentEditor.NOTHING_TO_ADD:{
@@ -115,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                case  IntentEditor.ALL_ITEMS_FROM_DATABASE:{
                    logger.info("We receive all items from database");
                    ArrayList<Item> items = IntentEditor.getItems(intent);
-                   updateItemlList(items);
+                   updateItemList(items);
                    break;
                }
                default:{
@@ -132,11 +142,17 @@ public class MainActivity extends AppCompatActivity {
         adapt.addAll(channels);
         adapt.notifyDataSetChanged();
     }
-    private void updateItemlList(ArrayList<Item> items){
+    private void updateItemList(ArrayList<Item> items){
         ListView listview = (ListView) findViewById(R.id.list_of_items);
         ItemListAdapter adapt = (ItemListAdapter) listview.getAdapter();
         adapt.clear();
         adapt.addAll(items);
         adapt.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(MessageReceiver);
+        super.onPause();
     }
 }

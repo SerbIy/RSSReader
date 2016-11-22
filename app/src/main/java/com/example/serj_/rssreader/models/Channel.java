@@ -3,6 +3,7 @@ package com.example.serj_.rssreader.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +27,7 @@ public final class Channel implements Parcelable {
         newItems = 0;
     }
 
-    private Channel(Parcel in) {
+    private Channel(@NonNull final Parcel in) {
         channelName = in.readString();
         channelLink = in.readString();
         channelID = in.readInt();
@@ -37,23 +38,26 @@ public final class Channel implements Parcelable {
 
     public static final Creator<Channel> CREATOR = new Creator<Channel>() {
         @Override
-        public Channel createFromParcel(Parcel in) {
+        public Channel createFromParcel(@NonNull final Parcel in) {
+
             return new Channel(in);
         }
 
         @Override
-        public Channel[] newArray(int size) {
+        public Channel[] newArray(@NonNull final int size) {
+
             return new Channel[size];
         }
     };
 
     @Override
     public int describeContents() {
+
         return 0;
     }
 
     @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest,@NonNull final int flags) {
         dest.writeString(channelName);
         dest.writeString(channelLink);
         dest.writeInt(channelID);

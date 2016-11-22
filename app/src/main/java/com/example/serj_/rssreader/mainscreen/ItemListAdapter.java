@@ -1,4 +1,4 @@
-package com.example.serj_.rssreader.adapters;
+package com.example.serj_.rssreader.mainscreen;
 
 
 import android.content.Context;
@@ -10,37 +10,35 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.example.serj_.rssreader.R;
 import com.example.serj_.rssreader.models.Item;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class ItemListAdapter extends ArrayAdapter<Item> implements View.OnClickListener {
+class ItemListAdapter extends ArrayAdapter<Item> implements View.OnClickListener {
 
-    private static final Logger logger = Logger.getLogger("MyLogger");
-    private Context context;
-    private ArrayList<Item> items;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
     private LayoutInflater inflater;
 
     private static class ViewHolder{
         TextView itemTitle;
         TextView itemDescription;
         TextView itemDate;
-        public ViewHolder(View view) {
+        ViewHolder(@NonNull final View view) {
             itemTitle = (TextView) view.findViewById(R.id.title_of_item);
             itemDescription = (TextView) view.findViewById(R.id.description_of_item);
             itemDate = (TextView) view.findViewById(R.id.date_of_post);
         }
     }
 
-    public ItemListAdapter(Context context, ArrayList<Item> channels){
+    ItemListAdapter(@NonNull final Context context,@NonNull final ArrayList<Item> channels){
         super(context,R.layout.item_in_list,channels);
         inflater = LayoutInflater.from(context);
-        logger.info(context.toString());
     }
 
     @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
-        Item item = getItem(position);
+    public View getView(@NonNull final int position, View convertView, @NonNull final ViewGroup parent) {
+        final Item item = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_in_list, parent, false);

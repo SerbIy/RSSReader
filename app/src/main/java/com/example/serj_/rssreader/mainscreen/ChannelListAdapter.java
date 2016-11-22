@@ -1,4 +1,4 @@
-package com.example.serj_.rssreader.adapters;
+package com.example.serj_.rssreader.mainscreen;
 
 
 import android.content.Context;
@@ -9,35 +9,34 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.example.serj_.rssreader.R;
 import com.example.serj_.rssreader.models.Channel;
-
+import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class ChannelListAdapter extends ArrayAdapter<Channel> implements View.OnClickListener {
+class ChannelListAdapter extends ArrayAdapter<Channel> implements View.OnClickListener {
 
-    private static final Logger logger = Logger.getLogger("MyLogger");
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
     private LayoutInflater inflater;
 
     private static class ViewHolder{
         TextView channelName;
         TextView newItems;
         TextView lastPubDate;
-        ViewHolder(View view) {
+        ViewHolder(@NonNull final View view) {
             channelName = (TextView) view.findViewById(R.id.channel_name);
             newItems = (TextView) view.findViewById(R.id.items_count);
-           lastPubDate = (TextView) view.findViewById(R.id.last_update);
+            lastPubDate = (TextView) view.findViewById(R.id.last_update);
         }
     }
 
-    public ChannelListAdapter(Context context, ArrayList<Channel> channels){
+    ChannelListAdapter(@NonNull final Context context,@NonNull final ArrayList<Channel> channels){
         super(context,R.layout.channel_in_list,channels);
         inflater = LayoutInflater.from(context);
-        logger.info(context.toString());
     }
 
     @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
-        Channel channel = getItem(position);
+    public View getView(@NonNull final int position,View convertView,@NonNull final ViewGroup parent) {
+        final Channel channel = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.channel_in_list, parent, false);
@@ -48,7 +47,7 @@ public class ChannelListAdapter extends ArrayAdapter<Channel> implements View.On
         }
         viewHolder.channelName.setText(channel.getChannelName());
         logger.info("Channel name "+channel.getChannelName());
-        viewHolder.newItems.setText(""+channel.getNewItems());
+        viewHolder.newItems.setText(String.format("%d",channel.getNewItems()));
         logger.info("Channel items "+channel.getNewItems());
         return convertView;
 
