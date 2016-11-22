@@ -156,7 +156,7 @@ private final Logger logger = Logger.getLogger(this.getClass().getName());
     protected void onPause() {
         logger.info("We in onPause");
         super.onPause();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(MessageReceiver);
+        //LocalBroadcastManager.getInstance(this).unregisterReceiver(MessageReceiver);
 
     }
 }

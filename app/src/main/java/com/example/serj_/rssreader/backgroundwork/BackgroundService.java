@@ -54,7 +54,7 @@ final public class BackgroundService extends Service {
                 break;
             }
             case IntentEditor.ASK_FOR_ALL_ITEMS:{
-                logger.info("Try to get channels from database");
+                logger.info("Try to get items from database");
                 taskPool.execute(new GetAllChannelsTask(rssDatabase,this));
                 break;
             }

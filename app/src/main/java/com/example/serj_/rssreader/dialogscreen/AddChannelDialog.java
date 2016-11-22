@@ -9,17 +9,18 @@ import android.widget.EditText;
 import com.example.serj_.rssreader.R;
 import lombok.NonNull;
 
+import java.util.logging.Logger;
+
 public class AddChannelDialog extends AppCompatActivity {
 
     private static final int RESULT_NONE = 1451;
-    private static final int RESULT_URL = 6123;
+    private static final int RESULT_URL = 122;
 
-    private EditText urlField = null;
-
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
     @Override
     protected void onCreate(Bundle Instance) {
         super.onCreate(Instance);
-        urlField = (EditText) findViewById(R.id.urlField);
+
         setContentView(R.layout.activity_dialog);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -31,14 +32,19 @@ public class AddChannelDialog extends AppCompatActivity {
    }
 
     public void onClickADD(@NonNull final View view){
-
+        final EditText urlField = (EditText) findViewById(R.id.urlField);
         final String output = urlField.getText().toString();
-
-        if(Patterns.WEB_URL.matcher(output).matches()) {
-            final Intent intent = new Intent();
-            intent.putExtra("URL",output);
-            setResult(RESULT_URL,intent);
-            finish();
+        if(!output.equals("")) {
+            if (Patterns.WEB_URL.matcher(output).matches()) {
+                logger.info("That's an url");
+                final Intent intent = new Intent();
+                intent.putExtra("URL", output);
+                setResult(RESULT_URL, intent);
+                finish();
+            }
+            else{
+                logger.info("That's not an url");
+            }
         }
     }
 
