@@ -97,7 +97,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
                 channelAdded = true;
                 database.insert(TABLE_CHANNELS, null, getChannelValue(chan));
             }
-            database.close();
+
         }
         catch (final SQLException exception){
             logger.warning("Can't add channel "+chan.getChannelName());
@@ -230,19 +230,13 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    public ArrayList<Item> getItems(@NonNull final List<Integer> channelsID){
+    public ArrayList<Item> getItemsById(@NonNull final int idOfChannel){
         ArrayList<Item> items = new ArrayList<>();
         Cursor cursor = null;
         try {
             final SQLiteDatabase database = this.getWritableDatabase();
-            String ids = "(";
-            for (Integer id : channelsID) {
-                ids += id.toString() + ", ";
-            }
-            ids = ids.substring(0, ids.length() - 2);
-            ids += ")";
 
-           cursor = database.query(TABLE_ITEMS,null,CHANNEL_ID + " IN " + ids,null,null,null,null);
+           cursor = database.query(TABLE_ITEMS,null,CHANNEL_ID + " = " + idOfChannel,null,null,null,null);
 
             if (cursor.moveToFirst()) {
                 do {

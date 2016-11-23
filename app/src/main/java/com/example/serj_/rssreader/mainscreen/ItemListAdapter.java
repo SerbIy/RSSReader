@@ -52,7 +52,7 @@ class ItemListAdapter extends ArrayAdapter<Item> implements View.OnClickListener
         viewHolder.itemDescription.setText(item.getDescriptionOfPost());
         logger.info("Item description "+item.getDescriptionOfPost());
         viewHolder.itemDate.setText(item.getDateOfPost());
-        logger.info("Item date "+item.getDescriptionOfPost());
+        logger.info("Item date "+item.getDateOfPost());
         if (item.isFresh()) {
             viewHolder.itemTitle.setTypeface(null, Typeface.BOLD);
         }

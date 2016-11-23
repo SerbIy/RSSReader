@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import com.example.serj_.rssreader.R;
 import com.example.serj_.rssreader.models.Channel;
-import lombok.NonNull;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 

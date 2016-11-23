@@ -15,11 +15,12 @@ public final  class IntentEditor {
     private static final String CHANNEL_TAG = "channel";
     private static final String CHANNELS_TAG = "channels";
     private static final String ITEMS_TAG = "items";
+    private static final String CHANNEL_ID = "channel_id";
 
     public static final int GET_CHANNEL_FROM_NET = 1;
     public static final int ASK_FOR_CHANNELS = 5;
     public static final int ASK_FOR_ALL_ITEMS = 7;
-
+    public static final int ASK_FOR_ITEMS_OF_CHANNEL = 9;
     public static final int NEW_CHANNEL_ADDED = 2;
     public static final int OLD_CHANNEL_TO_ADD = 3;
     public static final int NOTHING_TO_ADD = 0;
@@ -40,6 +41,12 @@ public final  class IntentEditor {
     public static Intent askServiceForChannels(@NonNull final Context context,@NonNull final Class<?> receiver){
         Intent intent = new Intent(context,receiver);
         intent = addCommand(intent,ASK_FOR_CHANNELS);
+        return intent;
+    }
+    public static Intent askServiceForItemsOfChannel(@NonNull final Context context,@NonNull final Class<?> receiver,@NonNull final int idOfChannel){
+        Intent intent = new Intent(context,receiver);
+        intent = addCommand(intent,ASK_FOR_ITEMS_OF_CHANNEL);
+        intent.putExtra(CHANNEL_ID,idOfChannel);
         return intent;
     }
     public static Intent askServiceForItems(@NonNull final Context context,@NonNull final Class<?> receiver){
@@ -111,5 +118,9 @@ public final  class IntentEditor {
     public static String getUrl(@NonNull final Intent intent){
 
         return intent.getStringExtra(URL_TAG);
+    }
+    public static int getIdOfChannel(@NonNull final Intent intent){
+
+        return intent.getIntExtra(CHANNEL_ID,0);
     }
 }
