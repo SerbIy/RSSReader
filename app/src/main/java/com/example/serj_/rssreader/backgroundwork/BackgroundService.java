@@ -17,7 +17,7 @@ final public class BackgroundService extends Service {
 
     private ExecutorService taskPool;
     private RSSDatabaseHelper rssDatabase;
-    private static final int NUMBER_OF_THREADS = 2;
+    private static final int NUMBER_OF_THREADS = 1;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     public BackgroundService(){
@@ -33,12 +33,12 @@ final public class BackgroundService extends Service {
     @Override
     public void onCreate(){
         super.onCreate();
-
         rssDatabase = new RSSDatabaseHelper(this);
         taskPool = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
     }
     @Override
-    public int onStartCommand(@NonNull final Intent intent,@NonNull final int flags,@NonNull final int startId){
+    public int onStartCommand(final Intent intent,final int flags,final int startId){
+        logger.info("onStartCommand started");
         super.onStartCommand(intent,flags,startId);
         final int command = IntentEditor.getCommand(intent);
         switch (command) {
@@ -62,7 +62,8 @@ final public class BackgroundService extends Service {
                 logger.info("Unknown command: "+command);
             }
         }
-        return(command);
+        logger.info("onStartCommand finished");
+        return(0);
     }
     @Override
     public void onDestroy(){

@@ -24,20 +24,20 @@ class ItemListAdapter extends ArrayAdapter<Item> implements View.OnClickListener
         TextView itemTitle;
         TextView itemDescription;
         TextView itemDate;
-        ViewHolder(@NonNull final View view) {
+        ViewHolder(final View view) {
             itemTitle = (TextView) view.findViewById(R.id.title_of_item);
             itemDescription = (TextView) view.findViewById(R.id.description_of_item);
             itemDate = (TextView) view.findViewById(R.id.date_of_post);
         }
     }
 
-    ItemListAdapter(@NonNull final Context context,@NonNull final ArrayList<Item> channels){
+    ItemListAdapter(final Context context,final ArrayList<Item> channels){
         super(context,R.layout.item_in_list,channels);
         inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public View getView(@NonNull final int position, View convertView, @NonNull final ViewGroup parent) {
+    public View getView(@NonNull final int position, View convertView, final ViewGroup parent) {
         final Item item = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {

@@ -22,20 +22,20 @@ class ChannelListAdapter extends ArrayAdapter<Channel> implements View.OnClickLi
         TextView channelName;
         TextView newItems;
         TextView lastPubDate;
-        ViewHolder(@NonNull final View view) {
+        ViewHolder(final View view) {
             channelName = (TextView) view.findViewById(R.id.channel_name);
             newItems = (TextView) view.findViewById(R.id.items_count);
             lastPubDate = (TextView) view.findViewById(R.id.last_update);
         }
     }
 
-    ChannelListAdapter(@NonNull final Context context,@NonNull final ArrayList<Channel> channels){
+    ChannelListAdapter(final Context context,final ArrayList<Channel> channels){
         super(context,R.layout.channel_in_list,channels);
         inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public View getView(@NonNull final int position,View convertView,@NonNull final ViewGroup parent) {
+    public View getView(final int position,View convertView,final ViewGroup parent) {
         final Channel channel = getItem(position);
         ViewHolder viewHolder;
         if (convertView == null) {
