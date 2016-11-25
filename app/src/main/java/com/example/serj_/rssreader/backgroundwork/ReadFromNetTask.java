@@ -3,8 +3,8 @@ package com.example.serj_.rssreader.backgroundwork;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
-import com.example.serj_.rssreader.models.Channel;
-import com.example.serj_.rssreader.models.Item;
+import com.example.serj_.rssreader.model.Channel;
+import com.example.serj_.rssreader.model.Item;
 import com.example.serj_.rssreader.process.FeedParser;
 import com.example.serj_.rssreader.database.RSSDatabaseHelper;
 import java.util.ArrayList;
@@ -13,10 +13,12 @@ import com.example.serj_.rssreader.process.IntentEditor;
 import lombok.NonNull;
 
 final class ReadFromNetTask implements Runnable {
+
     private final  String url;
     private final  RSSDatabaseHelper rssDatabase;
     private final Context context;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    private static final Logger logger = Logger.getLogger(ReadFromNetTask.class.getName());
 
     ReadFromNetTask(@NonNull String url,@NonNull RSSDatabaseHelper rssDatabaseHelper,@NonNull Context context){
         this.url = url;
@@ -42,7 +44,7 @@ final class ReadFromNetTask implements Runnable {
                     rssDatabase.updateNewItemsOfChannel(channel.getChannelID(), newItems);
                 } else {
                     if(newItems>0) {
-                        intent = IntentEditor.informAboutNewItems(channel);
+                        intent = IntentEditor.informAboutNewItems();
                         rssDatabase.updateNewItemsOfChannel(channel.getChannelID(), newItems);
                     }
                     else {

@@ -6,14 +6,15 @@
         android:id="@+id/main_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="start"
-        android:fitsSystemWindows="true" tools:showIn="@layout/content_main">
+        android:fitsSystemWindows="true"
+        tools:showIn="@layout/content_main"
+        tools:openDrawer="start">
 
 
     <include layout="@layout/content_main"/>
-
     <include layout="@layout/channel_list"
              android:layout_height="match_parent"
              android:layout_width="match_parent"
              android:layout_gravity="left"/>
+
 </android.support.v4.widget.DrawerLayout>

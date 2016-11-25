@@ -1,6 +1,6 @@
 package com.example.serj_.rssreader.process;
-import com.example.serj_.rssreader.models.Channel;
-import com.example.serj_.rssreader.models.Item;
+import com.example.serj_.rssreader.model.Channel;
+import com.example.serj_.rssreader.model.Item;
 import lombok.Getter;
 import lombok.NonNull;
 import org.xmlpull.v1.XmlPullParser;
@@ -13,12 +13,14 @@ import java.util.logging.Logger;
 
 
 public final class FeedParser {
+
+    private int channelID;
     private XmlPullParser parser = null;
     private enum TypeOfFeed {RSS, ATOM, ELSE}
     private Tags tags = null;
     private TypeOfFeed feedType;
-    private int channelID;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+
+    private static final Logger logger = Logger.getLogger(FeedParser.class.getName());
 
     @Getter
     private final class Tags {

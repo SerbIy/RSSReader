@@ -1,23 +1,27 @@
 package com.example.serj_.rssreader.process;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import com.example.serj_.rssreader.models.Channel;
-import com.example.serj_.rssreader.models.Item;
+import android.content.IntentFilter;
+import android.net.Uri;
+import com.example.serj_.rssreader.model.Channel;
+import com.example.serj_.rssreader.model.Item;
 import lombok.NonNull;
 
 import java.util.ArrayList;
 
 
 public final  class IntentEditor {
+
     private static final String COMMAND_TAG = "command";
     private static final String URL_TAG = "url";
-    private static final String CHANNEL_TAG = "channel";
+    private static final String CHANNEL_ID = "channel";
     private static final String CHANNELS_TAG = "channels";
     private static final String ITEMS_TAG = "items";
-    private static final String CHANNEL_ID = "channel_id";
 
-    public static final int GET_CHANNEL_FROM_NET = 1;
+    public static final int ASK_FOR_FEED_STATE = 1111;
+    public static final int GET_CHANNEL_FROM_NET = 11;
     public static final int ASK_FOR_CHANNELS = 5;
     public static final int ASK_FOR_ALL_ITEMS = 7;
     public static final int ASK_FOR_ITEMS_OF_CHANNEL = 9;
@@ -26,7 +30,7 @@ public final  class IntentEditor {
     public static final int NOTHING_TO_ADD = 0;
     public static final int ALL_CHANNELS_FROM_DATABASE = 6;
     public static final int ALL_ITEMS_FROM_DATABASE = 8;
-
+    public static final int ASK_TO_UPDATE= 12;
     public static final String FILTER = "CallbackToUi";
 
 
@@ -43,7 +47,9 @@ public final  class IntentEditor {
         intent = addCommand(intent,ASK_FOR_CHANNELS);
         return intent;
     }
-    public static Intent askServiceForItemsOfChannel(@NonNull final Context context,@NonNull final Class<?> receiver,@NonNull final int idOfChannel){
+    public static Intent askServiceForItemsOfChannel(@NonNull final Context context,
+                                                     @NonNull final Class<?> receiver,
+                                                              final int idOfChannel){
         Intent intent = new Intent(context,receiver);
         intent = addCommand(intent,ASK_FOR_ITEMS_OF_CHANNEL);
         intent.putExtra(CHANNEL_ID,idOfChannel);
@@ -54,15 +60,38 @@ public final  class IntentEditor {
         intent = addCommand(intent,ASK_FOR_ALL_ITEMS);
         return intent;
     }
+    public static Intent askServiceToUpdate(@NonNull final Context context,@NonNull final Class<?> receiver){
+        Intent intent = new Intent(context,receiver);
+        intent = addCommand(intent,ASK_TO_UPDATE);
+        return intent;
+    }
+    public static PendingIntent callServiceFromAlarm(@NonNull final Context context, @NonNull final Class<?> receiver){
+
+        return  PendingIntent.getService(context,0,IntentEditor.askServiceToUpdate(context,receiver),0);
+    }
+    public static Intent startItemInfoActivity(@NonNull final Context context,
+                                               @NonNull final Class<?> receiver,
+                                               @NonNull String url){
+        Intent intent = new Intent(context,receiver);
+        intent = addUrl(intent,url);
+        return intent;
+    }
+    public static Intent startSettingsActivity(@NonNull final Context context, @NonNull final Class<?> receiver){
+
+        return new Intent(context,receiver);
+    }
+    public static Intent openItemInBrowser(@NonNull String url){
+
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+    }
     public static Intent informAboutNewChannel(){
         Intent intent = new Intent(FILTER);
         intent = addCommand(intent,NEW_CHANNEL_ADDED);
         return intent;
     }
-    public static Intent informAboutNewItems(@NonNull final Channel channel){
+    public static Intent informAboutNewItems(){
         Intent intent = new Intent(FILTER);
         intent = addCommand(intent,OLD_CHANNEL_TO_ADD);
-        intent.putExtra(CHANNEL_TAG,channel);
         return intent;
     }
     public static Intent informNoNewItems(){
@@ -101,10 +130,13 @@ public final  class IntentEditor {
         return(intent.getParcelableArrayListExtra(ITEMS_TAG));
     }
 
+    public static IntentFilter getIntentFiter(){
 
-    private static  Intent addCommand(@NonNull final Intent intent, @NonNull final int command){
+        return new IntentFilter(FILTER);
+    }
+    private static  Intent addCommand(@NonNull final Intent intent, final int command){
+
         intent.putExtra(COMMAND_TAG,command);
-
         return intent;
     }
     private static Intent addUrl(@NonNull final Intent intent,@NonNull final String url){

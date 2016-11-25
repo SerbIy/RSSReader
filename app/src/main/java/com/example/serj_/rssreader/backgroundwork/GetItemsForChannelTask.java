@@ -5,19 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 import com.example.serj_.rssreader.database.RSSDatabaseHelper;
-import com.example.serj_.rssreader.models.Item;
+import com.example.serj_.rssreader.model.Item;
 import com.example.serj_.rssreader.process.IntentEditor;
 import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class GetItemsForChannelTask implements Runnable{
+class GetItemsForChannelTask implements Runnable{
+
+    private final int id;
+
     private final  RSSDatabaseHelper rssDatabase;
     private final Context context;
     private final Logger logger = Logger.getLogger(this.getClass().getName());
-    private final int id;
-    public GetItemsForChannelTask(@NonNull final int id,@NonNull RSSDatabaseHelper rssDatabaseHelper, @NonNull Context context){
+
+    public GetItemsForChannelTask(final int id,@NonNull RSSDatabaseHelper rssDatabaseHelper, @NonNull Context context){
         this.rssDatabase=rssDatabaseHelper;
         this.context = context;
         this.id = id;

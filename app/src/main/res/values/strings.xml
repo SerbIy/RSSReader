@@ -1,10 +1,67 @@
 <resources>
     <string name="app_name">RSSReader</string>
+
+    <string name="settings_name">Settings</string>
+    <string name="browser_check">Open items in browser</string>
+    <string name="update_periods">Select update period</string>
+
+    <string name="add_channel_name">Add channel</string>
     <string name="add_rss">Add RSS</string>
     <string name="delete_rss">Delete RSS</string>
     <string name="add_url">OK</string>
     <string name="add_cancel">Cancel</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="channels_list_title">RSS channels</string>
+
+    <string name="channels_list_title">Feed channels</string>
+    <string name="items_list_title">Feed</string>
+    <string name="channel_menu_delete">Delete channel</string>
+    <string name="settings">Settings</string>
+    <string name="channel_start_of_date">"Updated "</string>
+    <string name="item_start_of_date">"Posted "</string>
+    <string name="end_of_date">" ago"</string>
+    <string name="recently_added">just now</string>
+
+    <string-array name="period_list">
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>4 hours</item>
+    </string-array>
+
+
+
+
+    <plurals name="sec">
+        <item quantity="zero">s</item>
+        <item quantity="one">%d second </item>
+        <item quantity="other">%d seconds </item>
+    </plurals>
+    <plurals name="min">
+        <item quantity="zero">s</item>
+        <item quantity="one">%d minute </item>
+        <item quantity="other">%d minutes </item>
+    </plurals>
+    <plurals name="hour">
+        <item quantity="zero">s</item>
+        <item quantity="one">%d hour </item>
+        <item quantity="other">%d hours </item>
+    </plurals>
+    <plurals name="day">
+        <item quantity="zero">s</item>
+        <item quantity="one">%d day </item>
+        <item quantity="other">%d days </item>
+    </plurals>
+    <plurals name="month">
+        <item quantity="zero">s</item>
+        <item quantity="one">%1$d month </item>
+        <item quantity="other">%1$d months </item>
+    </plurals>
+    <plurals name="year">
+        <item quantity="zero">s</item>
+        <item quantity="one">%d year </item>
+        <item quantity="other">%d years </item>
+    </plurals>
+
 </resources>

@@ -1,15 +1,20 @@
-package com.example.serj_.rssreader.models;
+package com.example.serj_.rssreader.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.logging.Logger;
 
 @EqualsAndHashCode
 @Getter
 @Setter
-public final class Item implements Parcelable {
+public final class Item implements Parcelable,Comparable<Item> {
 
     private String dateOfPost;
     private String descriptionOfPost;
@@ -18,6 +23,8 @@ public final class Item implements Parcelable {
     private String linkOfPost;
     private int channelID;
     private boolean isFresh;
+
+    private static final Logger logger = Logger.getLogger(Item.class.getName());
 
     public Item(){
         dateOfPost = "";
@@ -41,7 +48,7 @@ public final class Item implements Parcelable {
 
     public static final Creator<Item> CREATOR = new Creator<Item>() {
         @Override
-        public Item createFromParcel(Parcel in) {
+        public Item createFromParcel(@NonNull Parcel in) {
 
             return new Item(in);
         }
@@ -60,7 +67,7 @@ public final class Item implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
+    public void writeToParcel(@NonNull final Parcel dest, final int flags) {
         dest.writeString(dateOfPost);
         dest.writeString(descriptionOfPost);
         dest.writeString(idOfPost);
@@ -68,6 +75,38 @@ public final class Item implements Parcelable {
         dest.writeString(linkOfPost);
         dest.writeInt(channelID);
         dest.writeByte((byte)(isFresh?1:0));
+    }
+    public boolean convertDate(@NonNull DateFormat format){
+        boolean isDateConverted = false;
+        long timeMs = 0;
+        final String date = this.getDateOfPost();
+        try {
+            timeMs = format.parse(date).getTime();
+            isDateConverted = true;
+        }
+        catch (final ParseException exception){
+            logger.warning("Can't parse date of post "+date);
+        }
+        finally {
+            if(isDateConverted) {
+                this.setDateOfPost(String.valueOf(timeMs));
+            }
+
+        }
+        return (isDateConverted);
+    }
+
+    @Override
+    public int compareTo(@NonNull final Item item) {
+        int result = 0;
+        final Long thisItem = Long.parseLong(this.dateOfPost);
+        final Long otherItem = Long.parseLong(item.getDateOfPost());
+        if(thisItem>otherItem){
+            result = 1;
+        }else if(thisItem<otherItem){
+            result=-1;
+        }
+        return result;
     }
 }
 

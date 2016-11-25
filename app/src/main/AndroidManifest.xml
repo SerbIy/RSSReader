@@ -20,8 +20,18 @@
         </activity>
         <activity
                 android:name=".dialogscreen.AddChannelDialog"
-                android:label="@string/app_name"
+                android:label="@string/add_channel_name"
                 android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".itemdetailscreen.ItemInfoActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".settingsscreen.SettingsActivity"
+            android:label="@string/settings_name"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <service
                 android:name=".backgroundwork.BackgroundService">

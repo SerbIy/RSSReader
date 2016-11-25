@@ -9,11 +9,13 @@ import java.util.logging.Logger;
 
 
 final class ConnectionToNet implements Closeable {
+
     private static final int READ_TIMEOUT = 10000;
     private static final int CONNECT_TIMEOUT = 15000;
+
     private InputStream stream;
     private HttpURLConnection connection;
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private static final Logger logger = Logger.getLogger(ConnectionToNet.class.getName());
 
     ConnectionToNet(@NonNull final String urlStr) {
         try{

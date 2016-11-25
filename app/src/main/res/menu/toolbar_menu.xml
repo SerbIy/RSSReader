@@ -2,12 +2,8 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context=".mainscreen.MainActivity">
-    <item android:id="@+id/add_new_rrs"
-          android:title="@string/add_rss"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
-    <item android:id="@+id/delete_rss"
-          android:title="@string/delete_rss"
+    <item android:id="@+id/settings"
+          android:title="@string/settings"
           android:orderInCategory="100"
           app:showAsAction="never"/>
 </menu>

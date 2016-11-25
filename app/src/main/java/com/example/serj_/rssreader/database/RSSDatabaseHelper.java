@@ -6,12 +6,10 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.example.serj_.rssreader.models.Channel;
-import com.example.serj_.rssreader.models.Item;
+import com.example.serj_.rssreader.model.Channel;
+import com.example.serj_.rssreader.model.Item;
 import lombok.NonNull;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class RSSDatabaseHelper extends SQLiteOpenHelper {
@@ -37,7 +35,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     private static final String ITEM_DESCRIPTION = "description_of_post";
     private static final String IS_ITEM_FRESH = "is_fresh";
 
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private static final Logger logger = Logger.getLogger(RSSDatabaseHelper.class.getName());
 
     public RSSDatabaseHelper(@NonNull final Context context){
 
@@ -76,7 +74,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase db,@NonNull final  int oldVersion,@NonNull final  int newVersion) {
+    public void onUpgrade(@NonNull final SQLiteDatabase db,final  int oldVersion,final  int newVersion) {
         try {
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CHANNELS);
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_ITEMS);
@@ -140,7 +138,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         return counter;
     }
 
-    public void updateNewItemsOfChannel(@NonNull final int idOfChannel,@NonNull final int counter){
+    public void updateNewItemsOfChannel(final int idOfChannel,final int counter){
         try {
             final SQLiteDatabase database = this.getWritableDatabase();
             logger.info("UPDATE " + TABLE_CHANNELS + " SET " + CHANNEL_NEW_ITEMS + " = " + CHANNEL_NEW_ITEMS + " + " + counter + " WHERE " + CHANNEL_ID + " =" + idOfChannel);
@@ -229,8 +227,7 @@ public class RSSDatabaseHelper extends SQLiteOpenHelper {
         }
         return items;
     }
-
-    public ArrayList<Item> getItemsById(@NonNull final int idOfChannel){
+    public ArrayList<Item> getItemsById(final int idOfChannel){
         ArrayList<Item> items = new ArrayList<>();
         Cursor cursor = null;
         try {

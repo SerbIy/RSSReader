@@ -1,6 +1,8 @@
+import com.android.build.gradle.AppExtension
+
 apply plugin: 'com.android.application'
 
-android {
+final def extension = android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
 
@@ -18,6 +20,7 @@ android {
         }
     }
 }
+extension
 
 dependencies {
 
@@ -25,6 +28,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'org.projectlombok:lombok:1.16.10'
-    compile 'com.android.support:support-annotations:+'
+
 
 }

@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context=".mainscreen.MainActivity">
+    <item android:id="@+id/delete_channel"
+          android:title="@string/channel_menu_delete"
+          android:orderInCategory="100"
+          app:showAsAction="never"/>
+</menu>

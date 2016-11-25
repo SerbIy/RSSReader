@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 
 public class AddChannelDialog extends AppCompatActivity {
 
-    private static final int RESULT_NONE = 1451;
     private static final int RESULT_URL = 122;
-
-    private final Logger logger = Logger.getLogger(this.getClass().getName());
+    private static final String TEXT_IN_FIELD = "current_text_in_field";
+    private static final Logger logger = Logger.getLogger(AddChannelDialog.class.getName());
+    private EditText rssField;
     @Override
     protected void onCreate(Bundle Instance) {
         super.onCreate(Instance);
@@ -24,16 +24,17 @@ public class AddChannelDialog extends AppCompatActivity {
         setContentView(R.layout.activity_dialog);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        this.rssField = (EditText) findViewById(R.id.rssField);
     }
 
    public void onClickCancel(@NonNull final View view){
-       setResult(RESULT_NONE);
        finish();
    }
 
     public void onClickADD(@NonNull final View view){
-        final EditText urlField = (EditText) findViewById(R.id.urlField);
-        final String output = urlField.getText().toString();
+
+        final String output = rssField.getText().toString();
         if(!output.equals("")) {
             if (Patterns.WEB_URL.matcher(output).matches()) {
                 logger.info("That's an url");
@@ -45,6 +46,25 @@ public class AddChannelDialog extends AppCompatActivity {
             else{
                 logger.info("That's not an url");
             }
+        }
+    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        logger.info("We try to save something");
+        if(rssField.getText()!=null) {
+            savedInstanceState.putString(TEXT_IN_FIELD, rssField.getText().toString());
+            logger.info("String saved");
+        }
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        final String savedText = savedInstanceState.getString(TEXT_IN_FIELD);
+        if(savedText!=null){
+            rssField.setText(savedText);
+            logger.info("String restored");
         }
     }
 
